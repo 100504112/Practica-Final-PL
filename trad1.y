@@ -61,15 +61,26 @@ typedef struct s_attr {
 
 %%                            // Seccion 3 Gramatica - Semantico
 
-axioma:         declaracion_var ';'      { printf ("%s\n", $1.code) ; }
-                r_axioma                 { ; }
-            |   sentencia ';'            { printf ("%s\n", $1.code) ; }
-                r_axioma                 { ; }
+
+axioma:         programa                     { printf ("%s\n", $1.code) ; }
             ;
 
-r_axioma:                                { ; }
-            |   axioma                   { ; }
+programa:       lista_declaraciones def_funciones { 
+                                           sprintf (temp, "%s\n%s", $1.code, $2.code) ;
+                                           $$.code = gen_code (temp) ; 
+                                         }
+            |   def_funciones            { $$.code = $1.code ; }
+            |   lista_declaraciones      { $$.code = $1.code ; }
             ;
+
+lista_declaraciones: 
+                declaracion_var ';'      { $$.code = $1.code ; }
+            |   lista_declaraciones declaracion_var ';' { 
+                                           sprintf (temp, "%s\n%s", $1.code, $2.code) ;
+                                           $$.code = gen_code (temp) ; 
+                                         }
+            ;
+
 
 // --- INICIO PARTE 1: VARIABLES GLOBALES ---
 
@@ -95,6 +106,27 @@ id_decl:        IDENTIF                  {
             ;
 
 // --- FIN PARTE 1 ---
+
+// --- INICIO PARTE 2---
+
+def_funciones:  def_main                 { $$.code = $1.code ; }
+            ;
+
+def_main:       MAIN '(' ')' '{' lista_sentencias '}' { 
+                                           sprintf (temp, "(defun main ()\n%s\n)\n(main)", $5.code) ;
+                                           $$.code = gen_code (temp) ; 
+                                         }
+            ;
+
+lista_sentencias: 
+                sentencia ';'            { $$.code = $1.code ; }
+            |   lista_sentencias sentencia ';' { 
+                                           sprintf (temp, "%s\n%s", $1.code, $2.code) ;
+                                           $$.code = gen_code (temp) ; 
+                                         }
+            ;
+
+// --- FIN PARTE 2 ---                      
 
 sentencia:      IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.code, $3.code) ; 
                                              $$.code = gen_code (temp) ; }
@@ -125,6 +157,8 @@ operando:       IDENTIF                  { sprintf (temp, "%s", $1.code) ;
                                            $$.code = gen_code (temp) ; }
             |   '(' expresion ')'        { $$ = $2 ; }
             ;
+
+
 
 
 %%                            // SECCION 4  Codigo en C
