@@ -51,6 +51,8 @@ typedef struct s_attr {
 %token IDENTIF       // Identificador=variable
 %token INTEGER       // identifica el tipo entero
 %token STRING
+%token PUTS
+%token PRINTF
 %token MAIN          // identifica el comienzo del proc. main
 %token WHILE         // identifica el bucle main
 
@@ -128,11 +130,20 @@ lista_sentencias:
 
 // --- FIN PARTE 2 ---                      
 
-sentencia:      IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.code, $3.code) ; 
+sentencia:      IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.code, $3.code) ;
                                              $$.code = gen_code (temp) ; }
-            |   '@' expresion              { sprintf (temp, "(print %s)", $2.code) ;  
+            |   PUTS '(' STRING ')'        { sprintf (temp, "(print \"%s\")", $3.code) ;
+                                             $$.code = gen_code (temp) ; }
+            |   PRINTF '(' STRING ',' lista_impresiones ')' { 
+                                             sprintf (temp, "%s", $5.code) ;
                                              $$.code = gen_code (temp) ; }
             ;
+
+lista_impresiones:      expresion          { sprintf (temp, "(princ %s)", $1.code) ;
+                                    $$.code = gen_code (temp) ;}
+            |   lista_impresiones ',' expresion     { sprintf (temp, "%s\n(princ %s)", $1.code, $3.code) ;
+                                            $$.code = gen_code (temp) ;}
+    ;
           
 expresion:      termino                  { $$ = $1 ; }
             |   expresion '+' expresion  { sprintf (temp, "(+ %s %s)", $1.code, $3.code) ;
@@ -221,6 +232,8 @@ typedef struct s_keyword { // para las palabras reservadas de C
 t_keyword keywords [] = { // define las palabras reservadas y los
     "main",        MAIN,           // y los token asociados
     "int",         INTEGER,
+    "puts",        PUTS,
+    "printf",      PRINTF,
     NULL,          0               // para marcar el fin de la tabla
 } ;
 
