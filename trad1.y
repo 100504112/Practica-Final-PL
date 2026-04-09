@@ -53,12 +53,24 @@ typedef struct s_attr {
 %token STRING
 %token PUTS
 %token PRINTF
+%token AND           // para &&
+%token OR            // para ||
+%token EQ            // para ==
+%token NEQ           // para !=
+%token LEQ           // para <=
+%token GEQ           // para >=
+%token IF
+%token ELSE
 %token MAIN          // identifica el comienzo del proc. main
 %token WHILE         // identifica el bucle main
 
 %right '='                    // es la ultima operacion que se debe realizar
-%left '+' '-'                 // menor orden de precedencia
-%left '*' '/'                 // orden de precedencia intermedio
+%left OR                      // menor orden de precedencia
+%left AND
+%left EQ NEQ
+%left '<' '>' LEQ GEQ
+%left '+' '-'
+%left '*' '/' '%'
 %left UNARY_SIGN              // mayor orden de precedencia
 
 %%                            // Seccion 3 Gramatica - Semantico
@@ -121,8 +133,8 @@ def_main:       MAIN '(' ')' '{' lista_sentencias '}' {
             ;
 
 lista_sentencias: 
-                sentencia ';'            { $$.code = $1.code ; }
-            |   lista_sentencias sentencia ';' { 
+                sentencia                { $$.code = $1.code ; }
+            |   lista_sentencias sentencia { 
                                            sprintf (temp, "%s\n%s", $1.code, $2.code) ;
                                            $$.code = gen_code (temp) ; 
                                          }
@@ -130,13 +142,25 @@ lista_sentencias:
 
 // --- FIN PARTE 2 ---                      
 
-sentencia:      IDENTIF '=' expresion      { sprintf (temp, "(setq %s %s)", $1.code, $3.code) ;
+sentencia:      IDENTIF '=' expresion ';'  { sprintf (temp, "(setq %s %s)", $1.code, $3.code) ;
                                              $$.code = gen_code (temp) ; }
-            |   PUTS '(' STRING ')'        { sprintf (temp, "(print \"%s\")", $3.code) ;
+            |   PUTS '(' STRING ')' ';'    { sprintf (temp, "(print \"%s\")", $3.code) ;
                                              $$.code = gen_code (temp) ; }
-            |   PRINTF '(' STRING ',' lista_impresiones ')' { 
+            |   PRINTF '(' STRING ',' lista_impresiones ')' ';' { 
                                              sprintf (temp, "%s", $5.code) ;
                                              $$.code = gen_code (temp) ; }
+            |   WHILE '(' expresion ')' '{' lista_sentencias '}' { 
+                    sprintf (temp, "(loop while %s do\n%s)", $3.code, $6.code) ;
+                    $$.code = gen_code (temp) ; 
+                }
+            |   IF '(' expresion ')' '{' lista_sentencias '}' { 
+                                             sprintf (temp, "(if %s\n(progn\n%s))", $3.code, $6.code) ;
+                                             $$.code = gen_code (temp) ; 
+                }
+            |   IF '(' expresion ')' '{' lista_sentencias '}' ELSE '{' lista_sentencias '}' { 
+                                             sprintf (temp, "(if %s\n(progn\n%s)\n(progn\n%s))", $3.code, $6.code, $10.code) ;
+                                             $$.code = gen_code (temp) ; 
+                }
             ;
 
 lista_impresiones:      expresion          { sprintf (temp, "(princ %s)", $1.code) ;
@@ -154,6 +178,24 @@ expresion:      termino                  { $$ = $1 ; }
                                            $$.code = gen_code (temp) ; }
             |   expresion '/' expresion  { sprintf (temp, "(/ %s %s)", $1.code, $3.code) ;
                                            $$.code = gen_code (temp) ; }
+            |   expresion AND expresion { sprintf (temp, "(and %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion OR expresion  { sprintf (temp, "(or %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion EQ expresion  { sprintf (temp, "(= %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion NEQ expresion { sprintf (temp, "(/= %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion '<' expresion { sprintf (temp, "(< %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion '>' expresion { sprintf (temp, "(> %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion LEQ expresion { sprintf (temp, "(<= %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion GEQ expresion { sprintf (temp, "(>= %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
+            |   expresion '%' expresion { sprintf (temp, "(mod %s %s)", $1.code, $3.code) ;
+                                          $$.code = gen_code (temp) ; }
             ;
 
 termino:        operando                               { $$ = $1 ; }                          
@@ -168,7 +210,6 @@ operando:       IDENTIF                  { sprintf (temp, "%s", $1.code) ;
                                            $$.code = gen_code (temp) ; }
             |   '(' expresion ')'        { $$ = $2 ; }
             ;
-
 
 
 
@@ -234,6 +275,15 @@ t_keyword keywords [] = { // define las palabras reservadas y los
     "int",         INTEGER,
     "puts",        PUTS,
     "printf",      PRINTF,
+    "&&",          AND,
+    "||",          OR,
+    "==",          EQ,
+    "!=",          NEQ,
+    "<=",          LEQ,
+    ">=",          GEQ,
+    "while",       WHILE,
+    "if",          IF,
+    "else",        ELSE,
     NULL,          0               // para marcar el fin de la tabla
 } ;
 
