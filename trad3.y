@@ -135,7 +135,7 @@ lista_declaraciones:
             ;
 
 
-// --- INICIO PUNTO 1: Variables globales ---
+// --- INICIO PARTE 1: VARIABLES GLOBALES ---
 
 declaracion_var:
                 INTEGER lista_ids        { $$.code = $2.code ; }
@@ -162,9 +162,9 @@ id_decl:        IDENTIF                  {
                                          }
             ;
 
-// --- FIN PUNTO 1 ---
+// --- FIN PARTE 1 ---
 
-// --- INICIO PUNTO 2: Función MAIN ---
+// --- INICIO PARTE 2 ---
 
 def_funciones:  def_main                 { $$.code = $1.code ; }
             |   lista_def_user def_main  {
@@ -204,7 +204,7 @@ lista_params:   INTEGER IDENTIF          { $$.code = $2.code ; }
 
 def_main:       MAIN { strcpy(current_func, "main") ; clear_locals() ; }
                 '(' ')' '{' cuerpo_funcion '}' {
-                                           sprintf (temp, "(defun main ()\n%s\n)\n(main)", $6.code) ;
+                                           sprintf (temp, "(defun main ()\n%s\n)", $6.code) ;
                                            $$.code = gen_code (temp) ;
                                          }
             ;
@@ -258,7 +258,7 @@ id_local:       IDENTIF                  {
 
 // --- FIN PUNTO 8 ---
 
-// --- FIN PUNTO 2 ---
+// --- FIN PARTE 2 ---
 
 lista_sentencias:
                 sentencia                { $$.code = $1.code ; }
