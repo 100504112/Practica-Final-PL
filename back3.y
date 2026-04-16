@@ -69,20 +69,22 @@ r_exprSeq:    exprSeq                           { ; }
 expression1:  expression                        { ; }  // Lisp can evaluate arithmetical (and similar) expressions in REPL mode
                                                        // REPL Mode should print out the evaluated expressions ==> Future TODO for the Forth translation
 
-            | '(' SETQ IDENTIF number ')'       { /* */ }  // This is the declaration of a variable which in Forth has to be of global scope
-                                                                                                      
+            | '(' SETQ IDENTIF                  { printf(" variable %s ", $3.code); }
+                number ')'                      { printf(" %s ! \n", $3.code); }                                                                                                      
             | '(' SETF /* */ ')'                { /* */ }    // Using a variable as receiver requires adding the store operator (!) in Forth 
 
-            | '(' PRINT STRING ')'              { /* */ }
+            | '(' PRINT STRING ')'              { printf(" .\" %s\" cr \n", $3.code); }
 
-            | '(' PRINC /* */ ')'               { /* */ }    // Princ should be able to print both expreesions and strings
-           
+            | '(' PRINT STRING ')'              { printf(" .\" %s\" cr \n", $3.code); }
+            | '(' PRINC STRING ')'              { printf(" .\" %s\" \n", $3.code); }
+            | '(' PRINC expression ')'          { printf(" . \n"); }           
+         
             | '(' PROGN exprSeq ')'             { /* */ }
 
             | '(' MAIN ')'                      { printf (" main\n") ; } // call to the main function 
 
-            | '(' DEFUN MAIN                    { /* */ } 
-                '(' ')' exprSeq ')'             {  /* */ }
+            | '(' DEFUN MAIN                    { printf(" : main "); } 
+                '(' ')' exprSeq ')'             { printf(" ; \n"); }
 
 // In real Lisp some expressions like if or Loop-While-Do are only permitted inside defun definitions (level 2 expressions) ==> Future ToDo
 // Level 1 and common expressions (arithmetic etc.) are also permitted inside a defun definition
