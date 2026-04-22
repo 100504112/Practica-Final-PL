@@ -8,3 +8,4 @@ main() {
     printf("%d", a);
     printf("%d", c);
 }
+//@ (main)

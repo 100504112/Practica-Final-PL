@@ -9,3 +9,4 @@ main() {
         printf("%d", v[i]);
     }
 }
+//@ (main)

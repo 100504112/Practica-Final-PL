@@ -7,3 +7,4 @@ main() {
         default : puts("otro") ; break ;
     }
 }
+//@ (main)

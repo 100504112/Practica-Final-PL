@@ -11,3 +11,4 @@ main() {
         puts("al menos uno true");
     }
 }
+//@ (main)

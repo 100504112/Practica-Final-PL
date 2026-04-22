@@ -14,3 +14,4 @@ main() {
     printf("%d", doble(4));
     printf("%d", triple(3));
 }
+//@ (main)

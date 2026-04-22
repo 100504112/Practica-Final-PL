@@ -8,3 +8,4 @@ main() {
     printf("%d", square(4));
     printf("%d", suma(3, 2));
 }
+//@ (main)

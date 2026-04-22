@@ -6,3 +6,4 @@ main() {
     printf("%d", a);
     printf("%d", b);
 }
+//@ (main)

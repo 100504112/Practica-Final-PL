@@ -10,3 +10,4 @@ main() {
     printf("%d", fact(5));
     printf("%d", fact(3));
 }
+//@ (main)

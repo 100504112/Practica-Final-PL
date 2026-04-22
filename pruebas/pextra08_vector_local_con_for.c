@@ -15,3 +15,4 @@ main() {
     total = suma_vector(5);
     printf("%d", total);
 }
+//@ (main)
