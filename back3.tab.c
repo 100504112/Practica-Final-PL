@@ -117,7 +117,64 @@ typedef struct s_attr {
 #  endif
 # endif
 
-#include "back3.tab.h"
+
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
+#endif
+
+/* Token kinds.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NUMBER = 258,                  /* NUMBER  */
+    IDENTIF = 259,                 /* IDENTIF  */
+    STRING = 260,                  /* STRING  */
+    MAIN = 261,                    /* MAIN  */
+    WHILE = 262,                   /* WHILE  */
+    LOOP = 263,                    /* LOOP  */
+    DO = 264,                      /* DO  */
+    SETQ = 265,                    /* SETQ  */
+    SETF = 266,                    /* SETF  */
+    DEFUN = 267,                   /* DEFUN  */
+    PRINT = 268,                   /* PRINT  */
+    PRINC = 269,                   /* PRINC  */
+    AND = 270,                     /* AND  */
+    OR = 271,                      /* OR  */
+    NOT = 272,                     /* NOT  */
+    NEQ = 273,                     /* NEQ  */
+    LEQ = 274,                     /* LEQ  */
+    GEQ = 275,                     /* GEQ  */
+    MOD = 276,                     /* MOD  */
+    IF = 277,                      /* IF  */
+    PROGN = 278                    /* PROGN  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
+#endif
+
+/* Value type.  */
+#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+typedef int YYSTYPE;
+# define YYSTYPE_IS_TRIVIAL 1
+# define YYSTYPE_IS_DECLARED 1
+#endif
+
+
+extern YYSTYPE yylval;
+
+
+int yyparse (void);
+
+
+
 /* Symbol kind.  */
 enum yysymbol_kind_t
 {
@@ -555,11 +612,11 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    58,    58,    61,    65,    66,    69,    71,    78,    82,
-      86,    90,    94,    96,    98,    98,   101,   102,   101,   105,
-     107,   107,   112,   116,   118,   119,   120,   121,   122,   124,
-     125,   126,   128,   129,   130,   131,   132,   133,   135,   139,
-     140,   143
+       0,    58,    58,    61,    65,    66,    69,    74,    84,    91,
+      99,   103,   108,   112,   115,   115,   121,   122,   121,   129,
+     131,   131,   137,   142,   145,   146,   147,   148,   149,   152,
+     153,   154,   157,   158,   159,   160,   161,   162,   165,   170,
+     171,   174
 };
 #endif
 
@@ -1189,258 +1246,258 @@ yyreduce:
   case 2: /* axiom: exprSeq  */
 #line 58 "back3.y"
                                                 { ; }
-#line 1193 "back3.tab.c"
+#line 1250 "back3.tab.c"
     break;
 
   case 3: /* exprSeq: expression1 r_exprSeq  */
 #line 62 "back3.y"
                                                 { ; }
-#line 1199 "back3.tab.c"
+#line 1256 "back3.tab.c"
     break;
 
   case 4: /* r_exprSeq: exprSeq  */
 #line 65 "back3.y"
                                                 { ; }
-#line 1205 "back3.tab.c"
+#line 1262 "back3.tab.c"
     break;
 
   case 5: /* r_exprSeq: %empty  */
 #line 66 "back3.y"
                                                 { ; }
-#line 1211 "back3.tab.c"
+#line 1268 "back3.tab.c"
     break;
 
   case 6: /* expression1: expression  */
 #line 69 "back3.y"
                                                 { ; }
-#line 1217 "back3.tab.c"
+#line 1274 "back3.tab.c"
     break;
 
   case 7: /* expression1: '(' SETQ IDENTIF NUMBER ')'  */
-#line 71 "back3.y"
+#line 74 "back3.y"
                                                 {
                 printf("variable %s ", yyvsp[-2].code) ;
                 if (yyvsp[-1].value != 0)
                     printf(" %d %s ! ", yyvsp[-1].value, yyvsp[-2].code) ;
                 printf("\n") ;
               }
-#line 1228 "back3.tab.c"
+#line 1285 "back3.tab.c"
     break;
 
   case 8: /* expression1: '(' SETF IDENTIF expression ')'  */
-#line 78 "back3.y"
+#line 84 "back3.y"
                                                 {
                 printf(" %s ! ", yyvsp[-2].code) ;
               }
-#line 1236 "back3.tab.c"
+#line 1293 "back3.tab.c"
     break;
 
   case 9: /* expression1: '(' PRINT STRING ')'  */
-#line 82 "back3.y"
+#line 91 "back3.y"
                                                 {
                 printf(" .\" %s\" cr ", yyvsp[-1].code) ;
               }
-#line 1244 "back3.tab.c"
+#line 1301 "back3.tab.c"
     break;
 
   case 10: /* expression1: '(' PRINC expression ')'  */
-#line 86 "back3.y"
+#line 99 "back3.y"
                                                 {
                 printf(" . ") ;
               }
-#line 1252 "back3.tab.c"
+#line 1309 "back3.tab.c"
     break;
 
   case 11: /* expression1: '(' PRINC STRING ')'  */
-#line 90 "back3.y"
+#line 103 "back3.y"
                                                 {
                 printf(" .\" %s\" ", yyvsp[-1].code) ;
               }
-#line 1260 "back3.tab.c"
+#line 1317 "back3.tab.c"
     break;
 
   case 12: /* expression1: '(' PROGN exprSeq ')'  */
-#line 94 "back3.y"
+#line 108 "back3.y"
                                                 { ; }
-#line 1266 "back3.tab.c"
+#line 1323 "back3.tab.c"
     break;
 
   case 13: /* expression1: '(' MAIN ')'  */
-#line 96 "back3.y"
+#line 112 "back3.y"
                                                 { printf(" main\n") ; }
-#line 1272 "back3.tab.c"
+#line 1329 "back3.tab.c"
     break;
 
   case 14: /* $@1: %empty  */
-#line 98 "back3.y"
+#line 115 "back3.y"
                                                 { printf(": main ") ; }
-#line 1278 "back3.tab.c"
+#line 1335 "back3.tab.c"
     break;
 
   case 15: /* expression1: '(' DEFUN MAIN $@1 '(' ')' exprSeq ')'  */
-#line 99 "back3.y"
+#line 116 "back3.y"
                                                 { printf(" ; \n") ; }
-#line 1284 "back3.tab.c"
+#line 1341 "back3.tab.c"
     break;
 
   case 16: /* $@2: %empty  */
-#line 101 "back3.y"
+#line 121 "back3.y"
                                                 { printf(" begin ") ; }
-#line 1290 "back3.tab.c"
+#line 1347 "back3.tab.c"
     break;
 
   case 17: /* $@3: %empty  */
-#line 102 "back3.y"
+#line 122 "back3.y"
                                                 { printf(" while ") ; }
-#line 1296 "back3.tab.c"
+#line 1353 "back3.tab.c"
     break;
 
   case 18: /* expression1: '(' LOOP WHILE $@2 expression $@3 DO exprSeq ')'  */
-#line 103 "back3.y"
+#line 123 "back3.y"
                                                 { printf(" repeat ") ; }
-#line 1302 "back3.tab.c"
+#line 1359 "back3.tab.c"
     break;
 
   case 19: /* expression1: '(' ifHead expression1 ')'  */
-#line 105 "back3.y"
+#line 129 "back3.y"
                                                 { printf(" THEN ") ; }
-#line 1308 "back3.tab.c"
+#line 1365 "back3.tab.c"
     break;
 
   case 20: /* $@4: %empty  */
-#line 107 "back3.y"
+#line 131 "back3.y"
                                                 { printf(" ELSE ") ; }
-#line 1314 "back3.tab.c"
+#line 1371 "back3.tab.c"
     break;
 
   case 21: /* expression1: '(' ifHead expression1 $@4 expression1 ')'  */
-#line 108 "back3.y"
+#line 132 "back3.y"
                                                { printf(" THEN ") ; }
-#line 1320 "back3.tab.c"
+#line 1377 "back3.tab.c"
     break;
 
   case 22: /* ifHead: IF expression  */
-#line 112 "back3.y"
+#line 137 "back3.y"
                                                 { printf(" IF ") ; }
-#line 1326 "back3.tab.c"
+#line 1383 "back3.tab.c"
     break;
 
   case 23: /* expression: operand  */
-#line 116 "back3.y"
+#line 142 "back3.y"
                                                             { ; }
-#line 1332 "back3.tab.c"
+#line 1389 "back3.tab.c"
     break;
 
   case 24: /* expression: '(' '+' expression expression ')'  */
-#line 118 "back3.y"
+#line 145 "back3.y"
                                                             { printf(" + ") ; }
-#line 1338 "back3.tab.c"
+#line 1395 "back3.tab.c"
     break;
 
   case 25: /* expression: '(' '-' expression expression ')'  */
-#line 119 "back3.y"
+#line 146 "back3.y"
                                                             { printf(" - ") ; }
-#line 1344 "back3.tab.c"
+#line 1401 "back3.tab.c"
     break;
 
   case 26: /* expression: '(' '*' expression expression ')'  */
-#line 120 "back3.y"
+#line 147 "back3.y"
                                                             { printf(" * ") ; }
-#line 1350 "back3.tab.c"
+#line 1407 "back3.tab.c"
     break;
 
   case 27: /* expression: '(' '/' expression expression ')'  */
-#line 121 "back3.y"
+#line 148 "back3.y"
                                                             { printf(" / ") ; }
-#line 1356 "back3.tab.c"
+#line 1413 "back3.tab.c"
     break;
 
   case 28: /* expression: '(' MOD expression expression ')'  */
-#line 122 "back3.y"
+#line 149 "back3.y"
                                                             { printf(" mod ") ; }
-#line 1362 "back3.tab.c"
+#line 1419 "back3.tab.c"
     break;
 
   case 29: /* expression: '(' AND expression expression ')'  */
-#line 124 "back3.y"
+#line 152 "back3.y"
                                                             { printf(" and ") ; }
-#line 1368 "back3.tab.c"
+#line 1425 "back3.tab.c"
     break;
 
   case 30: /* expression: '(' OR expression expression ')'  */
-#line 125 "back3.y"
+#line 153 "back3.y"
                                                             { printf(" or ") ; }
-#line 1374 "back3.tab.c"
+#line 1431 "back3.tab.c"
     break;
 
   case 31: /* expression: '(' NOT expression ')'  */
-#line 126 "back3.y"
+#line 154 "back3.y"
                                                             { printf(" 0= ") ; }
-#line 1380 "back3.tab.c"
+#line 1437 "back3.tab.c"
     break;
 
   case 32: /* expression: '(' '=' expression expression ')'  */
-#line 128 "back3.y"
+#line 157 "back3.y"
                                                             { printf(" = ") ; }
-#line 1386 "back3.tab.c"
+#line 1443 "back3.tab.c"
     break;
 
   case 33: /* expression: '(' NEQ expression expression ')'  */
-#line 129 "back3.y"
+#line 158 "back3.y"
                                                             { printf(" = 0= ") ; }
-#line 1392 "back3.tab.c"
+#line 1449 "back3.tab.c"
     break;
 
   case 34: /* expression: '(' '<' expression expression ')'  */
-#line 130 "back3.y"
+#line 159 "back3.y"
                                                             { printf(" < ") ; }
-#line 1398 "back3.tab.c"
+#line 1455 "back3.tab.c"
     break;
 
   case 35: /* expression: '(' LEQ expression expression ')'  */
-#line 131 "back3.y"
+#line 160 "back3.y"
                                                             { printf(" <= ") ; }
-#line 1404 "back3.tab.c"
+#line 1461 "back3.tab.c"
     break;
 
   case 36: /* expression: '(' '>' expression expression ')'  */
-#line 132 "back3.y"
+#line 161 "back3.y"
                                                             { printf(" > ") ; }
-#line 1410 "back3.tab.c"
+#line 1467 "back3.tab.c"
     break;
 
   case 37: /* expression: '(' GEQ expression expression ')'  */
-#line 133 "back3.y"
+#line 162 "back3.y"
                                                             { printf(" >= ") ; }
-#line 1416 "back3.tab.c"
+#line 1473 "back3.tab.c"
     break;
 
   case 38: /* expression: '(' '-' expression ')'  */
-#line 135 "back3.y"
+#line 165 "back3.y"
                                                             { printf(" negate ") ; }
-#line 1422 "back3.tab.c"
+#line 1479 "back3.tab.c"
     break;
 
   case 39: /* operand: IDENTIF  */
-#line 139 "back3.y"
+#line 170 "back3.y"
                                                 { printf(" %s @ ", yyvsp[0].code) ; }
-#line 1428 "back3.tab.c"
+#line 1485 "back3.tab.c"
     break;
 
   case 40: /* operand: number  */
-#line 140 "back3.y"
+#line 171 "back3.y"
                                                 { ; }
-#line 1434 "back3.tab.c"
+#line 1491 "back3.tab.c"
     break;
 
   case 41: /* number: NUMBER  */
-#line 143 "back3.y"
+#line 174 "back3.y"
                                                 { printf(" %d ", yyvsp[0].value) ; }
-#line 1440 "back3.tab.c"
+#line 1497 "back3.tab.c"
     break;
 
 
-#line 1444 "back3.tab.c"
+#line 1501 "back3.tab.c"
 
       default: break;
     }
@@ -1633,7 +1690,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 147 "back3.y"
+#line 178 "back3.y"
                             // SECTION 4    Code in C
 
 int n_line = 1 ;

@@ -68,21 +68,34 @@ r_exprSeq:    exprSeq                           { ; }
 
 expression1:  expression                        { ; }
 
+            // --- INICIO PUNTO 1: VARIABLES GLOBALES ---
+            // (setq a 0) -> "variable a"
+            // (setq a 5) -> "variable a  5 a !"
             | '(' SETQ IDENTIF NUMBER ')'       {
                 printf("variable %s ", $3.code) ;
                 if ($4.value != 0)
                     printf(" %d %s ! ", $4.value, $3.code) ;
                 printf("\n") ;
               }
+            // --- FIN PUNTO 1 ---
 
+            // --- INICIO PUNTO 5: ASIGNACION ---
+            // (setf a expr) -> "expr a !"
             | '(' SETF IDENTIF expression ')'   {
                 printf(" %s ! ", $3.code) ;
               }
+            // --- FIN PUNTO 5 ---
 
+            // --- INICIO PUNTO 3: IMPRESION DE CADENAS ---
+            // (print "Hola") -> .\" Hola\" cr
             | '(' PRINT STRING ')'              {
                 printf(" .\" %s\" cr ", $3.code) ;
               }
+            // --- FIN PUNTO 3 ---
 
+            // --- INICIO PUNTO 4: IMPRESION DE VALORES ENTEROS ---
+            // (princ expr)   -> "expr ."
+            // (princ "str")  -> ".\" str\""
             | '(' PRINC expression ')'          {
                 printf(" . ") ;
               }
@@ -90,22 +103,34 @@ expression1:  expression                        { ; }
             | '(' PRINC STRING ')'              {
                 printf(" .\" %s\" ", $3.code) ;
               }
+            // --- FIN PUNTO 4 ---
 
             | '(' PROGN exprSeq ')'             { ; }
 
+            // --- INICIO PUNTO 2: FUNCIONES GENERICAS ---
+            // Llamada a main: (main) -> "main"
             | '(' MAIN ')'                      { printf(" main\n") ; }
 
+            // Definicion de main: (defun main () ...) -> ": main ... ;"
             | '(' DEFUN MAIN                    { printf(": main ") ; }
                 '(' ')' exprSeq ')'             { printf(" ; \n") ; }
+            // --- FIN PUNTO 2 ---
 
+            // --- INICIO PUNTO 6: BUCLES WHILE ---
+            // (loop while cond do body) -> "begin cond while body repeat"
             | '(' LOOP WHILE                    { printf(" begin ") ; }
                  expression                     { printf(" while ") ; }
                  DO exprSeq ')'                 { printf(" repeat ") ; }
+            // --- FIN PUNTO 6 ---
 
+            // --- INICIO PUNTO 7: ESTRUCTURA IF/ELSE ---
+            // (if cond then)      -> "cond IF then THEN"
+            // (if cond then else) -> "cond IF then ELSE else THEN"
             | '(' ifHead expression1 ')'        { printf(" THEN ") ; }
 
             | '(' ifHead expression1            { printf(" ELSE ") ; }
                  expression1 ')'               { printf(" THEN ") ; }
+            // --- FIN PUNTO 7 ---
             ;
 
 
@@ -113,18 +138,22 @@ ifHead:       IF expression                     { printf(" IF ") ; }
             ;
 
 
+// --- INICIO PUNTO 8: OPERADORES ARITMETICOS ---
 expression:   operand                                       { ; }
 
+            // Operadores aritmeticos
             | '(' '+' expression expression ')'             { printf(" + ") ; }
             | '(' '-' expression expression ')'             { printf(" - ") ; }
             | '(' '*' expression expression ')'             { printf(" * ") ; }
             | '(' '/' expression expression ')'             { printf(" / ") ; }
             | '(' MOD expression expression ')'             { printf(" mod ") ; }
 
+            // Operadores logicos: not -> "0=" (no existe en Forth como tal)
             | '(' AND expression expression ')'             { printf(" and ") ; }
             | '(' OR  expression expression ')'             { printf(" or ") ; }
             | '(' NOT expression ')'                        { printf(" 0= ") ; }
 
+            // Operadores relacionales: /= -> "= 0=" (negacion de igualdad)
             | '(' '=' expression expression ')'             { printf(" = ") ; }
             | '(' NEQ expression expression ')'             { printf(" = 0= ") ; }
             | '(' '<' expression expression ')'             { printf(" < ") ; }
@@ -132,8 +161,10 @@ expression:   operand                                       { ; }
             | '(' '>' expression expression ')'             { printf(" > ") ; }
             | '(' GEQ expression expression ')'             { printf(" >= ") ; }
 
+            // Negacion unaria
             | '(' '-' expression ')'                        { printf(" negate ") ; }
             ;
+// --- FIN PUNTO 8 ---
 
 
 operand:      IDENTIF                           { printf(" %s @ ", $1.code) ; }
